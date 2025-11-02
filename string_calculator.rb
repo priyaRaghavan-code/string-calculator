@@ -1,31 +1,50 @@
-# class for adding numbers string
+# Class for adding numbers in a string
+
 class StringCalculator
-  def add(numbers)
-    return 0 if numbers.empty?
+  attr_reader :numbers, :delimiters, :values
 
-    delimiter = /,|\n/
-    if numbers.start_with?("//")
-      parts = numbers.split("\n", 2)
-      delimiters = extract_delimiters(parts[0])
-      delimiter = Regexp.union(delimiters)
-      numbers = parts[1]
-    end
+  def initialize(numbers = "")
+    @numbers = numbers
+    @delimiters = [",", "\n"]
+    @values = []
+  end
 
-    num_array = numbers.split(delimiter).map(&:to_i)
-    negatives = num_array.select { |n| n < 0 }
+  def add(input = @numbers)
+    return 0 if input.strip.empty?
 
-    raise "negatives not allowed: #{negatives.join(', ')}" unless negatives.empty?
+    @delimiters, @numbers = parse_delimiters(input)
+    @values = extract_numbers
 
-    num_array.reject { |n| n > 1000 }.inject(0) { |sum, n| sum + n }
+    check_for_negatives
+    sum_valid_numbers
   end
 
   private
 
-  def extract_delimiters(header)
-    if header.start_with?("//[") && header.end_with?("]")
-      header[3..-2].split('][')
-    else
-      [header[2]]
-    end
+  def parse_delimiters(input)
+    return [delimiters, input] unless input.start_with?("//")
+
+    header, body = input.split("\n", 2)
+    header_delimiters = extract_delimiters_from_header(header)
+    [header_delimiters, body]
+  end
+
+  def extract_delimiters_from_header(header)
+    return [header[2]] unless header.include?("[")
+
+    header.scan(/\[([^\]]+)\]/).flatten
+  end
+
+  def extract_numbers
+    numbers.split(Regexp.union(delimiters)).map(&:to_i)
+  end
+
+  def check_for_negatives
+    negatives = values.select(&:negative?)
+    raise "negatives not allowed: #{negatives.join(', ')}" unless negatives.empty?
+  end
+
+  def sum_valid_numbers
+    values.reject { |n| n > 1000 }.sum
   end
 end
