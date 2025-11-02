@@ -6,11 +6,7 @@ require_relative '../string_calculator'
 RSpec.describe StringCalculator do
   let(:calculator) { described_class.new }
 
-  it "returns 0 for an empty string" do
-    expect(calculator.add("")).to eq(0)
-  end
-
-  context "basic functionality" do
+  context "handling one or two numbers" do
     it "returns 0 for an empty string" do
       expect(calculator.add("")).to eq(0)
     end
@@ -40,7 +36,7 @@ RSpec.describe StringCalculator do
     end
   end
 
-  context "supporting different delimiters" do
+  context "handling different delimiters" do
     it "supports different single-character delimiters" do
       expect(calculator.add("//;\n1;2")).to eq(3)
       expect(calculator.add("//|\n1|2|3")).to eq(6)
@@ -59,6 +55,20 @@ RSpec.describe StringCalculator do
     it "supports multiple delimiters with length longer than one char" do
       expect(calculator.add("//[***][%%%]\n1***2%%%3")).to eq(6)
       expect(calculator.add("//[###][&&&]\n4###5&&&6")).to eq(15)
+    end
+  end
+
+  context "handling negatives" do
+    it "raises an error for negative numbers" do
+      expect { calculator.add("1,-2,3") }.to raise_error("negatives not allowed: -2")
+      expect { calculator.add("-1,-2,3") }.to raise_error("negatives not allowed: -1, -2")
+    end
+  end
+
+  context "handling large numbers" do
+    it "ignores numbers bigger than 1000" do
+      expect(calculator.add("2,1001")).to eq(2)
+      expect(calculator.add("1000,1001,2")).to eq(1002)
     end
   end
 end
