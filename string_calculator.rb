@@ -9,10 +9,10 @@ class StringCalculator
     @values = []
   end
 
-  def add(input = @numbers)
-    return 0 if input.strip.empty?
+  def add
+    return 0 if numbers.strip.empty?
 
-    @delimiters, @numbers = parse_delimiters(input)
+    @delimiters, @numbers = parse_delimiters
     @values = extract_numbers
 
     check_for_negatives
@@ -21,10 +21,10 @@ class StringCalculator
 
   private
 
-  def parse_delimiters(input)
-    return [delimiters, input] unless input.start_with?("//")
+  def parse_delimiters
+    return [delimiters, numbers] unless numbers.start_with?("//")
 
-    header, body = input.split("\n", 2)
+    header, body = numbers.split("\n", 2)
     header_delimiters = extract_delimiters_from_header(header)
     [header_delimiters, body]
   end
@@ -41,7 +41,7 @@ class StringCalculator
 
   def check_for_negatives
     negatives = values.select(&:negative?)
-    raise "negatives not allowed: #{negatives.join(', ')}" unless negatives.empty?
+    raise "negatives not allowed #{negatives.join(', ')}" unless negatives.empty?
   end
 
   def sum_valid_numbers

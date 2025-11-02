@@ -2,11 +2,10 @@ require 'rspec'
 require_relative '../string_calculator'
 
 RSpec.describe StringCalculator do
-  let(:calculator) { described_class.new }
-
   shared_examples "string addition" do |input, expected|
     it "returns #{expected} for input '#{input}'" do
-      expect(calculator.add(input)).to eq(expected)
+      calculator = described_class.new(input)
+      expect(calculator.add).to eq(expected)
     end
   end
 
@@ -41,11 +40,13 @@ RSpec.describe StringCalculator do
 
   context "handles negatives" do
     it "raises an error for single negative number" do
-      expect { calculator.add("1,-2,3") }.to raise_error("negatives not allowed: -2")
+      calculator = described_class.new("1,-2,3")
+      expect { calculator.add }.to raise_error("negatives not allowed -2")
     end
 
     it "raises an error for multiple negatives" do
-      expect { calculator.add("-1,-2,3") }.to raise_error("negatives not allowed: -1, -2")
+      calculator = described_class.new("-1,-2,3")
+      expect { calculator.add }.to raise_error("negatives not allowed -1, -2")
     end
   end
 
