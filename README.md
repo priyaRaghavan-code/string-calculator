@@ -6,6 +6,9 @@ You can use the String Calculator by either cloning the repository or directly d
 # Clone the repository using below link
 git clone https://github.com/priyaRaghavan-code/string-calculator.git
 
+# Install the gems
+`bundle install`
+
 # To run test cases
 `bundle exec rspec`
 
